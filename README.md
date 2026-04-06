@@ -9,42 +9,42 @@ Mau noi cho du an train mo hinh Transformer nho cho van ban tieng Viet. Du an go
 
 Cai dat nhanh:
 ```bash
-pip install torch tokenizers
+pip install -r requirements.txt
 ```
 
 ## 1) Train tokenizer (BPE)
 Neu ban chua co tokenizer, tao tu file text goc.
 ```bash
-python tokenizer.py --train input.txt
+python src/tokenizer/tokenizer.py --train dataset/input.txt
 ```
-Lenh nay tao ra file `vi_tokenizer.json` (mac dinh).
+Lenh nay tao ra file `models/vi_tokenizer.json` (mac dinh).
 
 ## 2) Train model
 ```bash
-python train.py \
-  --input input.txt \
-  --tokenizer vi_tokenizer.json \
-  --out model.pt \
+python train/train.py \
+  --input dataset/input.txt \
+  --tokenizer models/vi_tokenizer.json \
+  --out models/model.pt \
   --max_iters 2000 \
   --eval_interval 200 \
   --eval_iters 100 \
   --learning_rate 3e-4
 ```
-Sau khi train xong, model duoc luu tai `model.pt`.
+Sau khi train xong, model duoc luu tai `models/model.pt`.
 
 ## 3) Sinh van ban
 ```bash
-python test.py \
-  --model model.pt \
-  --tokenizer vi_tokenizer.json \
-  --prompt_file input.txt \
+python test/test.py \
+  --model models/model.pt \
+  --tokenizer models/vi_tokenizer.json \
+  --prompt_file dataset/input.txt \
   --max_new_tokens 100 \
-  --out generated.txt
+  --out models/generated.txt
 ```
-Ket qua duoc ghi vao `generated.txt`.
+Ket qua duoc ghi vao `models/generated.txt`.
 
 ## Tuy chinh cau hinh
-Cac tham so co ban nam trong `config.py`:
+Cac tham so co ban nam trong `src/config/config.py`:
 - `batch_size`: so luong mau moi batch
 - `block_size`: do dai ngu canh
 - `n_embd`: kich thuoc embedding
@@ -52,5 +52,5 @@ Cac tham so co ban nam trong `config.py`:
 - `n_layer`: so lop Transformer block
 
 ## Ghi chu
-- Thiet bi se tu dong chon CUDA, MPS (Apple Silicon), hoac CPU trong [gpu_support.py](gpu_support.py).
+- Thiet bi se tu dong chon CUDA, MPS (Apple Silicon), hoac CPU trong `src/config/gpu_support.py`.
 - Neu prompt rong, he thong se dung token `[PAD]` de khoi tao sinh van ban.
