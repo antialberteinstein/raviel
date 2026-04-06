@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dylib
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+
+# PyTorch / outputs
+*.pt
+generated.txt
+
+# Tokenizer artifacts (if you generate alternates)
+tokenizers/
+
+# Logs and caches
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# macOS
+.DS_Store
+
+# Editor settings
+.vscode/
+.idea/
