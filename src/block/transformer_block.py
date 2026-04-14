@@ -1,6 +1,9 @@
 import torch.nn as nn
-from src.block.mlp import FeedForward
-from src.block.multihead import MultiHeadAttention
+
+from block.mlp import FeedForward
+from block.multihead import MultiHeadAttention
+
+
 class Block(nn.Module):
     """Transformer block: multi-head attention + MLP with residuals."""
 
@@ -14,9 +17,9 @@ class Block(nn.Module):
         self.ln1 = nn.LayerNorm(n_embd)
         self.ln2 = nn.LayerNorm(n_embd)
 
-    def forward(self, x):
+    def forward(self, x, freqs_cos, freqs_sin):
         # Residual connections with pre-norm.
-        x = x + self.sa(self.ln1(x))
+        x = x + self.sa(self.ln1(x), freqs_cos, freqs_sin)
         x = x + self.ffwd(self.ln2(x))
 
         return x

@@ -1,10 +1,15 @@
+import sys
+
+sys.path.append("src")
+
 import argparse
+
 import torch
 
-from src.config.config import device
-from src.data_proc.dataloader import DataLoader
-from src.tokenizer.tokenizer import Tokenizer
-from src.model.transformer_model import LargeLanguageModel
+from config.config import device
+from data_proc.dataloader import DataLoader
+from model.transformer_model import LargeLanguageModel
+from tokenizer.tokenizer import Tokenizer
 
 
 def estimate_loss(model, data_loader, eval_iters):
@@ -45,9 +50,7 @@ def main():
     for step in range(args.max_iters):
         if step % args.eval_interval == 0 or step == args.max_iters - 1:
             losses = estimate_loss(model, data_loader, args.eval_iters)
-            print(
-                f"step {step}: train {losses['train']:.4f}, val {losses['val']:.4f}"
-            )
+            print(f"step {step}: train {losses['train']:.4f}, val {losses['val']:.4f}")
 
         x, y = data_loader.get_batch("train")
         _, loss = model(x, y)

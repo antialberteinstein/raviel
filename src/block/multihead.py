@@ -1,7 +1,9 @@
 import torch
 import torch.nn as nn
-from src.config.config import n_embd
-from src.attention_head.attention_head import Head
+
+from attention_head.attention_head import Head
+from config.config import n_embd
+
 
 class MultiHeadAttention(nn.Module):
     """Run multiple attention heads in parallel and project back."""
@@ -15,8 +17,8 @@ class MultiHeadAttention(nn.Module):
         # Final projection after concatenation.
         self.proj = nn.Linear(n_embd, n_embd)
 
-    def forward(self, x):
+    def forward(self, x, freqs_cos, freqs_sin):
         # Concatenate head outputs then project.
-        out = torch.cat([h(x) for h in self.heads], dim=-1)
+        out = torch.cat([h(x, freqs_cos, freqs_sin) for h in self.heads], dim=-1)
         out = self.proj(out)
         return out

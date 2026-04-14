@@ -1,8 +1,10 @@
-from src.config.config import vocab_size
 from tokenizers import Tokenizer as HFTokenizer
 from tokenizers.models import BPE
 from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.trainers import BpeTrainer
+
+from config.config import vocab_size
+
 
 class Tokenizer:
     def __init__(self, file_path="models/vi_tokenizer.json"):

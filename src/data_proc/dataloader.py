@@ -1,5 +1,6 @@
 import torch
-from src.config.config import batch_size, block_size, device
+
+from config.config import batch_size, block_size, device
 
 
 class DataLoader:

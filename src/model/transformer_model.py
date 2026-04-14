@@ -1,11 +1,15 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from src.config.config import block_size, device, n_embd, n_layer, vocab_size
-from src.block.transformer_block import Block
+
+from attention_head.rope import precompute_freqs_cis
+from block.transformer_block import Block
+from config.config import block_size, device, n_embd, n_head, n_layer, vocab_size
+
 
 class LargeLanguageModel(nn.Module):
     """Causal Transformer language model."""
+
     def __init__(self):
         super().__init__()
 
@@ -14,23 +18,31 @@ class LargeLanguageModel(nn.Module):
         self.position_embedding_table = nn.Embedding(block_size, n_embd)
 
         # Stack of Transformer blocks.
-        self.blocks = nn.Sequential(*[Block(n_embd, n_head=4) for _ in range(n_layer)])
+        self.blocks = nn.Sequential(
+            *[Block(n_embd, n_head=n_head) for _ in range(n_layer)]
+        )
 
         # Final layer norm and projection to vocab logits.
         self.ln_f = nn.LayerNorm(n_embd)
         self.lm_head = nn.Linear(n_embd, vocab_size)
+
+        # Tính freqs_cos, freqs_sin cho RoPE
+        head_size = n_embd / n_head
+        self.freqs_cos, self.freqs_sin = precompute_freqs_cis(
+            dim=head_size, seq_len=block_size
+        )
 
     def forward(self, idx, targets=None):
         B, T = idx.shape
 
         # Lookup token + position embeddings.
         tok_emb = self.token_embedding_table(idx)
-        pos_emb = self.position_embedding_table(torch.arange(T, device=device))
 
         # Combine token and position information.
-        x = tok_emb + pos_emb
+        x = tok_emb
 
-        x = self.blocks(x)
+        for block in self.blocks:
+            x = block(x, self.freqs_cos[:T], self.freqs_sin[:T])
 
         logits = self.lm_head(self.ln_f(x))
 

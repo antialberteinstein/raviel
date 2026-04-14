@@ -1,9 +1,14 @@
+import sys
+
+sys.path.append("src")
+
 import argparse
+
 import torch
 
-from src.config.config import block_size, device
-from src.tokenizer.tokenizer import Tokenizer
-from src.model.transformer_model import LargeLanguageModel
+from config.config import block_size, device
+from model.transformer_model import LargeLanguageModel
+from tokenizer.tokenizer import Tokenizer
 
 
 def main():
